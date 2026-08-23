@@ -57,7 +57,7 @@ Without these, the donor portal and admin panel render a "not configured yet" me
 ## Supabase setup
 
 1. Create a project at [supabase.com](https://supabase.com).
-2. In the SQL Editor, run the contents of `supabase/schema.sql`. This creates the `profiles`, `donor_allocations`, and `applications` tables with row-level security so donors only see their own records and only admins can manage allocations and applications.
+2. In the SQL Editor, run the contents of `supabase/schema.sql`. This creates the `profiles`, `donor_allocations`, and `applications` tables with row-level security so donors only see their own records and only admins can manage allocations and applications. Applicants also get a unique status code they can use to check their application stage without an account.
 3. Copy the Project URL and anon public key into `.env` as above.
 4. To grant admin access, sign up for a donor account through the homepage, then run:
    ```sql

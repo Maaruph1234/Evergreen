@@ -116,10 +116,18 @@ export const FAQ_ENTRIES: FaqEntry[] = [
   {
     id: 'apply-process',
     question: 'What happens after I submit an application?',
-    keywords: ['after i apply', 'application status', 'when will i hear back', 'application process', 'how long does it take to hear back', 'application review'],
+    keywords: ['after i apply', 'when will i hear back', 'application process', 'how long does it take to hear back', 'application review'],
     answer:
-      'Once you submit the application form, our team reviews it and reaches out directly to confirm your spot before the program starts. Make sure the phone number and email on your application are correct so we can reach you.',
+      "Once you submit the application form, you'll get a unique status code — save it. Our team reviews applications and updates your stage (Applied, Under Review, Assessment, Shortlisted, Enrolled) as things progress, which you can check anytime using that code.",
     link: { label: 'Apply Now', href: '/apply.html' },
+  },
+  {
+    id: 'check-status',
+    question: 'How do I check my application status?',
+    keywords: ['check my status', 'application status', 'my status code', 'check status code', 'am i shortlisted', 'assessment score', 'have i been selected', 'track my application'],
+    answer:
+      'Use the status code you received after applying — enter it on our Check Your Status page to see your current stage, assessment score if available, and any notes from our team. No account needed.',
+    link: { label: 'Check Your Status', href: '/status.html' },
   },
   {
     id: 'upcoming-events',
@@ -140,9 +148,9 @@ export const FAQ_ENTRIES: FaqEntry[] = [
   {
     id: 'donate',
     question: 'How can I donate?',
-    keywords: ['donate', 'donation', 'give money', 'contribute', 'sponsor', 'support financially', 'fund', 'how to give'],
+    keywords: ['donate', 'donation', 'give money', 'contribute', 'sponsor', 'support financially', 'fund', 'how to give', 'bank transfer', 'account number'],
     answer:
-      'You can donate directly through the Donate section on our homepage. Choose a preset amount (₦5,000 / ₦10,000 / ₦25,000 / ₦50,000) or enter a custom amount in Naira. We accept bank transfers and online payments, and every naira goes directly to our programs.',
+      "You can donate directly through the Donate section on our homepage. Choose a preset amount (₦5,000 / ₦10,000 / ₦25,000 / ₦50,000) or enter a custom amount, add your name and email, then hit Donate Now — we'll show you our Jaiz Bank account details to send the transfer to. Every naira goes directly to our programs.",
     link: { label: 'Go to Donate section', href: '/index.html#donate' },
   },
   {

@@ -15,6 +15,7 @@ export default defineConfig({
         blog: resolve(__dirname, 'blog.html'),
         admin: resolve(__dirname, 'admin.html'),
         apply: resolve(__dirname, 'apply.html'),
+        status: resolve(__dirname, 'status.html'),
       },
     },
   },

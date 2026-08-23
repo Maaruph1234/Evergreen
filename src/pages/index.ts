@@ -9,6 +9,8 @@ import { initCountdown } from '../lib/countdown';
 import { initChatbot } from '../lib/chatbot';
 import { initDonorPortal } from '../lib/donor-portal';
 import { initViewportHeightVar } from '../lib/viewportHeight';
+import { whatsappUrlWithText } from '../lib/site-config';
+import { submitDonationPledge } from '../lib/donor-auth';
 
 initViewportHeightVar();
 initMobileMenu();
@@ -59,13 +61,16 @@ declare global {
   }
 }
 
+let currentDonationAmount = 5000;
+
 window.selectAmt = (btn, amount) => {
   document.querySelectorAll('.amount-btn').forEach((b) => b.classList.remove('active'));
   btn.classList.add('active');
   const customAmt = document.getElementById('customAmt') as HTMLInputElement | null;
   if (customAmt) customAmt.value = '';
+  currentDonationAmount = parseInt(amount, 10);
   const total = document.getElementById('totalDisplay');
-  if (total) total.innerHTML = '&#8358;' + parseInt(amount, 10).toLocaleString();
+  if (total) total.innerHTML = '&#8358;' + currentDonationAmount.toLocaleString();
 };
 
 window.updateTotal = () => {
@@ -73,10 +78,63 @@ window.updateTotal = () => {
   const val = parseInt(customAmt?.value ?? '', 10);
   if (!isNaN(val) && val > 0) {
     document.querySelectorAll('.amount-btn').forEach((b) => b.classList.remove('active'));
+    currentDonationAmount = val;
     const total = document.getElementById('totalDisplay');
     if (total) total.innerHTML = '&#8358;' + val.toLocaleString();
   }
 };
+
+// Donate flow: no payment gateway yet, so submitting reveals our bank
+// transfer details instead, plus a WhatsApp link to confirm the transfer.
+const donateForm = document.getElementById('donateForm') as HTMLFormElement | null;
+const donateBankPanel = document.getElementById('donateBankPanel');
+donateForm?.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const firstName = (document.getElementById('donateFirstName') as HTMLInputElement).value.trim();
+  const lastName = (document.getElementById('donateLastName') as HTMLInputElement).value.trim();
+  const email = (document.getElementById('donateEmail') as HTMLInputElement).value.trim();
+  const totalText = document.getElementById('totalDisplay')?.textContent?.trim() ?? '';
+
+  const bankAmount = document.getElementById('donateBankAmount');
+  if (bankAmount) bankAmount.textContent = totalText;
+
+  const whatsappBtn = document.getElementById('donateWhatsappBtn') as HTMLAnchorElement | null;
+  if (whatsappBtn) {
+    const message = `Hi Evergreen Lifecare, I'm ${firstName || 'a donor'} and I've just sent ${totalText} to your Jaiz Bank account. Here's my payment reference/receipt.`;
+    whatsappBtn.href = whatsappUrlWithText(message);
+  }
+
+  // Record the pledge so it shows up as "pending" in the donor's dashboard
+  // right away, before staff confirm the transfer landed.
+  submitDonationPledge({
+    full_name: [firstName, lastName].filter(Boolean).join(' ') || 'Donor',
+    email,
+    amount: currentDonationAmount,
+  }).catch(() => {
+    /* best-effort — the WhatsApp confirmation still lets staff follow up */
+  });
+
+  donateForm.style.display = 'none';
+  if (donateBankPanel) donateBankPanel.style.display = 'block';
+});
+
+document.getElementById('donateBackBtn')?.addEventListener('click', () => {
+  if (donateForm) donateForm.style.display = '';
+  if (donateBankPanel) donateBankPanel.style.display = 'none';
+});
+
+document.getElementById('donateCopyBtn')?.addEventListener('click', async (e) => {
+  const btn = e.currentTarget as HTMLButtonElement;
+  const number = document.getElementById('donateAcctNumber')?.textContent?.trim() ?? '';
+  try {
+    await navigator.clipboard.writeText(number);
+    const original = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-check"></i> Copied';
+    window.setTimeout(() => { btn.innerHTML = original; }, 1500);
+  } catch {
+    /* clipboard unavailable — number is already visible on screen */
+  }
+});
 
 // Countdown to KYDEEI Cohort 1 (September 21, 2026) — mirrors the events page.
 initCountdown('2026-09-21T09:00:00', {

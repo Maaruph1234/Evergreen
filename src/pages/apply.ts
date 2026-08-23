@@ -67,7 +67,7 @@ function renderForm(): void {
     const motivation = (document.getElementById('appMotivation') as HTMLTextAreaElement).value.trim();
 
     try {
-      await submitApplication({
+      const accessCode = await submitApplication({
         program: 'KYDEEI Cohort — September 21–30, 2026',
         full_name: fullName,
         email,
@@ -83,6 +83,12 @@ function renderForm(): void {
           <i class="fas fa-circle-check"></i>
           <h3>Application Received</h3>
           <p>Thanks, ${escapeHtml(fullName || 'friend')} — we've got your application for KYDEEI Cohort. Our team will reach out at <strong>${escapeHtml(email)}</strong> or <strong>${escapeHtml(phone)}</strong> with next steps.</p>
+          <div class="apply-code-box">
+            <span>Your status code</span>
+            <strong>${escapeHtml(accessCode)}</strong>
+            <p>Save this — use it on our Check Your Status page to see your application stage anytime.</p>
+            <a href="status.html" class="submit-btn" style="margin-top:14px"><i class="fas fa-arrow-right"></i> Check Your Status</a>
+          </div>
         </div>
       `;
     } catch (err: any) {

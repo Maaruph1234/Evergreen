@@ -55,6 +55,28 @@ export function onAuthChange(cb: (session: import('@supabase/supabase-js').Sessi
   return data.subscription;
 }
 
+/** Same as onAuthChange, but also passes the event name — used to catch
+ * the PASSWORD_RECOVERY event fired after a donor follows a reset link. */
+export function onAuthEvent(cb: (event: string, session: import('@supabase/supabase-js').Session | null) => void) {
+  if (!supabase) return { unsubscribe() {} };
+  const { data } = supabase.auth.onAuthStateChange((event, session) => cb(event, session));
+  return data.subscription;
+}
+
+export async function sendPasswordReset(email: string): Promise<void> {
+  if (!supabase) throw new Error('Donor portal is not configured yet.');
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/index.html#donor-portal`,
+  });
+  if (error) throw error;
+}
+
+export async function updatePassword(newPassword: string): Promise<void> {
+  if (!supabase) throw new Error('Donor portal is not configured yet.');
+  const { error } = await supabase.auth.updateUser({ password: newPassword });
+  if (error) throw error;
+}
+
 export async function fetchMyProfile(userId: string): Promise<DonorProfile | null> {
   if (!supabase) return null;
   const { data, error } = await supabase
@@ -136,16 +158,22 @@ export interface NewApplication {
   motivation: string;
 }
 
-/** Anyone can submit an application — no login required (see RLS policy). */
-export async function submitApplication(entry: NewApplication): Promise<void> {
+/** Anyone can submit an application — no login required (see RLS policy).
+ * Returns the access code the applicant uses to check their status later. */
+export async function submitApplication(entry: NewApplication): Promise<string> {
   if (!supabase) throw new Error('Applications are not accepting submissions yet.');
-  const { error } = await supabase.from('applications').insert(entry);
+  const { data, error } = await supabase.from('applications').insert(entry).select('access_code').single();
   if (error) throw error;
+  return (data as { access_code: string }).access_code;
 }
 
 export interface ApplicationRecord extends NewApplication {
   id: string;
   status: string;
+  access_code: string;
+  stage: string;
+  score: number | null;
+  beneficiary_notes: string | null;
   created_at: string;
 }
 
@@ -153,7 +181,7 @@ export async function fetchAllApplications(): Promise<ApplicationRecord[]> {
   if (!supabase) return [];
   const { data, error } = await supabase
     .from('applications')
-    .select('id, program, full_name, email, phone, age, location, experience, motivation, status, created_at')
+    .select('id, program, full_name, email, phone, age, location, experience, motivation, status, access_code, stage, score, beneficiary_notes, created_at')
     .order('created_at', { ascending: false })
     .limit(200);
   if (error) throw error;
@@ -169,5 +197,96 @@ export async function deleteApplication(id: string): Promise<void> {
 export async function updateApplicationStatus(id: string, status: string): Promise<void> {
   if (!supabase) throw new Error('Not configured.');
   const { error } = await supabase.from('applications').update({ status }).eq('id', id);
+  if (error) throw error;
+}
+
+export interface BeneficiaryUpdate {
+  stage: string;
+  score: number | null;
+  beneficiary_notes: string;
+}
+
+export async function updateApplicationBeneficiary(id: string, entry: BeneficiaryUpdate): Promise<void> {
+  if (!supabase) throw new Error('Not configured.');
+  const { error } = await supabase.from('applications').update(entry).eq('id', id);
+  if (error) throw error;
+}
+
+export interface BeneficiaryRecord {
+  program: string;
+  full_name: string;
+  stage: string;
+  score: number | null;
+  beneficiary_notes: string | null;
+  created_at: string;
+}
+
+/** Looks up one applicant's status by their access code, via the
+ * security-definer RPC in schema.sql — never reads the full table. */
+export async function fetchBeneficiaryByCode(code: string): Promise<BeneficiaryRecord | null> {
+  if (!supabase) return null;
+  const { data, error } = await supabase.rpc('get_beneficiary_by_code', { p_code: code });
+  if (error) throw error;
+  const rows = data as BeneficiaryRecord[] | null;
+  return rows && rows.length > 0 ? rows[0] : null;
+}
+
+export interface NewPledge {
+  full_name: string;
+  email: string;
+  amount: number;
+  note?: string;
+}
+
+export interface PledgeRecord {
+  id: string;
+  full_name: string;
+  email: string;
+  amount: number;
+  currency: string;
+  status: string;
+  note: string | null;
+  created_at: string;
+}
+
+/** Recorded automatically when someone submits the bank-transfer donate
+ * form — lets it show up as "pending" before staff confirm the transfer. */
+export async function submitDonationPledge(entry: NewPledge): Promise<void> {
+  if (!supabase) return;
+  const { error } = await supabase.from('donation_pledges').insert(entry);
+  if (error) throw error;
+}
+
+/** Pledges belonging to the signed-in donor (matched by account email via RLS). */
+export async function fetchMyPledges(): Promise<PledgeRecord[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('donation_pledges')
+    .select('id, full_name, email, amount, currency, status, note, created_at')
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as PledgeRecord[];
+}
+
+export async function fetchAllPledges(): Promise<PledgeRecord[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('donation_pledges')
+    .select('id, full_name, email, amount, currency, status, note, created_at')
+    .order('created_at', { ascending: false })
+    .limit(200);
+  if (error) throw error;
+  return (data ?? []) as PledgeRecord[];
+}
+
+export async function updatePledgeStatus(id: string, status: string): Promise<void> {
+  if (!supabase) throw new Error('Not configured.');
+  const { error } = await supabase.from('donation_pledges').update({ status }).eq('id', id);
+  if (error) throw error;
+}
+
+export async function deletePledge(id: string): Promise<void> {
+  if (!supabase) throw new Error('Not configured.');
+  const { error } = await supabase.from('donation_pledges').delete().eq('id', id);
   if (error) throw error;
 }
