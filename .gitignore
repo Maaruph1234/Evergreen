@@ -1,0 +1,28 @@
+# Ignore Office and document files
+*.doc
+*.docx
+*.odt
+*.pdf
+*.xls
+*.xlsx
+*.ppt
+*.pptx
+
+# Mac / Editor
+.DS_Store
+.vscode/
+Thumbs.db
+
+# Temporary and backup
+~$*
+*.tmp
+*.bak
+
+# Node / build
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Environment secrets (Supabase keys)
+.env
+.env.local

@@ -1,0 +1,191 @@
+/* Evergreen FAQ chatbot widget — positioned above the WhatsApp float button */
+.evg-chat-toggle {
+  position: fixed;
+  bottom: 156px;
+  right: 28px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--green, #16a34a);
+  border: none;
+  box-shadow: 0 6px 24px rgba(22, 163, 74, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1001;
+  transition: transform 0.2s, background 0.2s;
+}
+.evg-chat-toggle:hover { transform: scale(1.06); background: var(--green-dark, #0f7a37); }
+
+.evg-chat-greeting {
+  position: fixed;
+  bottom: 156px;
+  right: 92px;
+  max-width: 220px;
+  background: var(--white, #fff);
+  color: var(--dark, #151812);
+  padding: 12px 34px 12px 14px;
+  border-radius: 14px;
+  font-family: var(--sans, 'DM Sans', sans-serif);
+  font-size: .84rem;
+  line-height: 1.4;
+  box-shadow: 0 14px 36px rgba(21, 18, 16, 0.22);
+  z-index: 1001;
+  opacity: 0;
+  transform: translateY(8px) scale(.96);
+  pointer-events: none;
+  transition: opacity .35s ease, transform .35s ease;
+  cursor: pointer;
+}
+.evg-chat-greeting.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+.evg-chat-greeting::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  bottom: 18px;
+  width: 12px;
+  height: 12px;
+  background: var(--white, #fff);
+  transform: rotate(45deg);
+  box-shadow: 3px -3px 6px rgba(21, 18, 16, 0.06);
+}
+.evg-chat-greeting-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  color: rgba(21, 18, 16, .4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .7rem;
+}
+.evg-chat-greeting-close:hover { color: rgba(21, 18, 16, .8); }
+
+.evg-chat-toggle i { color: #fff; font-size: 1.4rem; }
+.evg-chat-toggle.open i::before { content: "\f00d"; }
+
+.evg-chat-panel {
+  /* .open (toggled in chatbot.ts) is what shows this */
+  display: none;
+  position: fixed;
+  bottom: 228px;
+  right: 24px;
+  width: min(360px, calc(100vw - 40px));
+  max-height: min(520px, calc(100vh - 260px));
+  background: var(--white, #fff);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(21, 18, 16, 0.25);
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1001;
+  font-family: var(--sans, 'DM Sans', sans-serif);
+}
+.evg-chat-panel.open {
+  display: flex;
+}
+
+.evg-chat-header {
+  background: var(--dark, #151210);
+  color: #fff;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.evg-chat-header strong { display: block; font-family: var(--serif, 'Fraunces', Georgia, serif); font-size: 1rem; }
+.evg-chat-header span { display: block; font-size: 0.72rem; color: rgba(255, 255, 255, 0.6); margin-top: 2px; }
+.evg-chat-close { background: none; border: none; color: #fff; cursor: pointer; font-size: 1rem; opacity: 0.8; }
+.evg-chat-close:hover { opacity: 1; }
+
+.evg-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--cream, #f5f0e8);
+}
+
+.evg-chat-msg {
+  max-width: 86%;
+  padding: 10px 13px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+.evg-chat-msg p { margin: 0; }
+.evg-chat-msg-bot {
+  align-self: flex-start;
+  background: #fff;
+  color: var(--body, #3d3530);
+  border-bottom-left-radius: 2px;
+  box-shadow: 0 2px 8px rgba(21, 18, 16, 0.06);
+}
+.evg-chat-msg-user {
+  align-self: flex-end;
+  background: var(--green, #16a34a);
+  color: #fff;
+  border-bottom-right-radius: 2px;
+}
+.evg-chat-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--green, #16a34a);
+  text-decoration: underline;
+}
+.evg-chat-msg-user .evg-chat-link { color: #fff; }
+
+.evg-chat-input-row {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid var(--cream-dark, #ece5d5);
+  background: #fff;
+}
+.evg-chat-input-row input {
+  flex: 1;
+  border: 1px solid var(--cream-dark, #ece5d5);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  outline: none;
+}
+.evg-chat-input-row input:focus { border-color: var(--green, #16a34a); }
+.evg-chat-input-row button {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: none;
+  background: var(--green, #16a34a);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.evg-chat-input-row button:hover { background: var(--green-dark, #0f7a37); }
+
+@media (max-width: 480px) {
+  .evg-chat-toggle { bottom: 126px; right: 16px; width: 50px; height: 50px; }
+  .evg-chat-panel { right: 12px; left: 12px; width: auto; bottom: 188px; }
+  .evg-chat-greeting { bottom: 184px; right: 16px; max-width: 180px; font-size: .8rem; }
+  .evg-chat-greeting::after { right: 16px; bottom: -6px; transform: rotate(135deg); }
+}
+@media (max-width: 960px) and (min-width: 481px) {
+  .evg-chat-toggle { bottom: 144px; right: 20px; width: 52px; height: 52px; }
+  .evg-chat-panel { right: 20px; bottom: 208px; }
+  .evg-chat-greeting { bottom: 204px; right: 20px; }
+  .evg-chat-greeting::after { right: 16px; bottom: -6px; transform: rotate(135deg); }
+}
