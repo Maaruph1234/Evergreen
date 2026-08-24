@@ -1,6 +1,6 @@
 # Evergreen Lifecare Support Foundation — Website
 
-Multi-page marketing site for Evergreen Lifecare Support Foundation, built with Vite and TypeScript.
+Website for Evergreen Lifecare Support Foundation.
 
 ## Stack
 
