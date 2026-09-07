@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Sitemap: https://evergreenlifecare.org/sitemap.xml
+# Updated to use evergreenlifecare.org
