@@ -4,17 +4,18 @@ import '../styles/chatbot.css';
 import { initMobileMenu } from '../lib/menu';
 import { initScrollTop } from '../lib/scrollTop';
 import { initReveal } from '../lib/reveal';
-import { initCounterObservers, startCounter } from '../lib/counters';
 import { initCountdown } from '../lib/countdown';
 import { initChatbot } from '../lib/chatbot';
 import { initDonorPortal } from '../lib/donor-portal';
 import { initViewportHeightVar } from '../lib/viewportHeight';
 import { whatsappUrlWithText } from '../lib/site-config';
 import { submitDonationPledge } from '../lib/donor-auth';
+import { initBehindTheScenes } from '../lib/behind-scenes';
 
 initViewportHeightVar();
 initMobileMenu();
 initScrollTop();
+initBehindTheScenes();
 
 // Rotating hero background photos.
 const heroSlides = document.querySelectorAll<HTMLElement>('.hero-slide');
@@ -27,10 +28,7 @@ if (heroSlides.length > 1) {
   }, 4500);
 }
 
-// Reveal-on-scroll also kicks off counters inside a revealed section.
-initReveal((el) => {
-  el.querySelectorAll<HTMLElement>('.counter').forEach((counter) => startCounter(counter));
-});
+initReveal();
 
 // Nav background changes once the page is scrolled.
 const navbar = document.getElementById('navbar');
@@ -50,8 +48,6 @@ document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
     }
   });
 });
-
-initCounterObservers();
 
 // Donation amount picker.
 declare global {

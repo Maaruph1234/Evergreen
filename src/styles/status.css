@@ -106,7 +106,7 @@ body:has(#mobileMenu.open) .hamburger {
 }
 body:has(#mobileMenu.open) .hamburger i:first-child { transform: rotate(90deg); }
 body:has(#mobileMenu.open) .hamburger::after { transform: rotate(180deg); color: rgba(255,255,255,.9); }
-.page-hero{margin-top:74px;background:linear-gradient(135deg,rgba(10,82,38,.92) 0%,rgba(40,73,111,.80) 55%,rgba(21,18,16,.90) 100%),url('/close-up-women-holding-hands.jpg') center/cover no-repeat;padding:90px 60px;color:var(--white)}
+.page-hero{margin-top:74px;background:linear-gradient(135deg,rgba(10,82,38,.92) 0%,rgba(40,73,111,.80) 55%,rgba(21,18,16,.90) 100%),url('/outreach/outreach-waiting-1.jpg') center/cover no-repeat;padding:90px 60px;color:var(--white)}
 .page-hero-inner{max-width:1200px;margin:0 auto}
 .breadcrumb{display:flex;align-items:center;gap:8px;font-size:.8rem;color:rgba(255,255,255,.55);margin-bottom:20px}
 .breadcrumb a{color:rgba(255,255,255,.55)}.breadcrumb a:hover{color:var(--gold-light)}.breadcrumb i{font-size:.65rem}
